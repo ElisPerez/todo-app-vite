@@ -9,8 +9,11 @@ const Filters = {
 const state = {
   todos: [
     new Todo('Piedra del alma'),
-    new Todo('Piedra del infinito'),
+    new Todo('Piedra del espacio'),
     new Todo('Piedra del tiempo'),
+    new Todo('Piedra del poder'),
+    new Todo('Piedra de la mente'),
+    new Todo('Piedra de la realidad'),
   ],
   filter: Filters.All,
 };
@@ -25,7 +28,19 @@ const loadStore = () => {
 };
 
 const getTodos = (filter = Filters.All) => {
-  
+  switch (filter) {
+    case Filters.All:
+      return [...state.todos];
+
+    case Filters.Completed:
+      return state.todos.filter(todo => todo.done); // Retorna nuevo arreglo con los To-Dos completados
+
+    case Filters.Pending:
+      return state.todos.filter(todo => !todo.done); // Retorna nuevo arreglo con los To-Dos pendientes
+
+    default:
+      throw new Error(`Option ${filter} is not valid`);
+  }
 };
 
 /**
@@ -33,7 +48,11 @@ const getTodos = (filter = Filters.All) => {
  * @param {String} description
  */
 const addTodo = description => {
-  throw new Error('Not inplemented');
+  if (!description) {
+    throw new Error('Description is required');
+  }
+
+  state.todos.push(new Todo(description));
 };
 
 /**
@@ -42,23 +61,32 @@ const addTodo = description => {
  * @param todoId - The id of the todo to toggle
  */
 const toggleTodo = todoId => {
-  throw new Error('Not inplemented');
+  state.todos = state.todos.map(todo => {
+    if (todo.id === todoId) {
+      todo.done = !todo.done;
+    }
+    return todo;
+  });
 };
 
 const deleteTodo = todoId => {
-  throw new Error('Not inplemented');
+  if (!todoId) throw new Error('todoId es required');
+  state.todos = state.todos.filter(todo => todo.id !== todoId);
 };
 
 const deleteCompleted = () => {
-  throw new Error('Not inplemented');
+  state.todos = state.todos.filter(todo => !todo.done); //todo: Fernando lo agregó sin el !
 };
 
+/**
+ * @param {Filters} newFilter
+ */
 const setFilter = (newFilter = Filters.All) => {
-  throw new Error('Not inplemented');
+  state.filter = newFilter;
 };
 
 const getCurrentFilter = () => {
-  throw new Error('Not inplemented');
+  return state.filter;
 };
 
 export default {
@@ -66,6 +94,7 @@ export default {
   deleteCompleted,
   deleteTodo,
   getCurrentFilter,
+  getTodos,
   initStore,
   loadStore,
   setFilter,
